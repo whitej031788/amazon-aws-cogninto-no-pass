@@ -42,7 +42,7 @@ export class AuthService {
       password: this.getRandomString(30),
       attributes: {
         name: fullName,
-        subscription_id: subId
+        "custom:subscription_id": subId
       }
     };
     await Auth.signUp(params);
