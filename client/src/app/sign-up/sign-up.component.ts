@@ -28,11 +28,11 @@ export class SignUpComponent {
 
   constructor(private router: Router, private auth: AuthService, private zone: NgZone) { }
 
-  public async signup() {
+  public async signup(subId) {
     this.errorMessage_.next('');
     this.busy_.next(true);
     try {
-      await this.auth.signUp(this.email.value, this.fullName.value);
+      await this.auth.signUp(this.email.value, this.fullName.value, subId);
       await this.auth.signIn(this.email.value);
       this.router.navigate(['/enter-secret-code']);
     } catch (err) {
@@ -50,7 +50,10 @@ export class SignUpComponent {
       email: self.email.value,
       override: 'https://checkout.staging.paddle-internal.com/checkout/custom/eyJ0IjoiTW92YXZpIiwiaSI6Imh0dHBzOlwvXC9wYWRkbGUtc3RhZ2luZy5zMy5hbWF6b25hd3MuY29tXC91c2VyXC8zMzExM1wvdWZyaFJ5aExTWG1CcWNMZGRDQ1JfZG93bmxvYWQlMjAlMjgxJTI5LnBuZyIsInIiOm51bGwsImNtIjoiIiwicmUiOjEsInAiOjUyODE0MiwiYWwiOjAsImNjIjp7IlVTRCI6Ijk5IiwiR0JQIjoiOTkifSwicnAiOnsiVVNEIjoiMCIsIkdCUCI6IjAifSwieSI6IiIsInEiOjAsImQiOjEsImEiOltdLCJ2IjoiMzMxMTMiLCJkdyI6ZmFsc2UsInMiOiJiOGYzNzdhNmQzZmIzZmM2NmQ3OGQ1MGI1MWNhMzAxNjE3ZTdlYzNhMWRkZjEyMDRkYzY0NDUyMzdkZWMyYWZlYTUyYzRmZTMzMjM2MGVmZmY4MDdjODUzNjBiOGQ5Njk3ODU1YTRkNTg5YjhkOWU2OTIxNTBhNDZkMjhiMGYxMSJ9',
       successCallback: function(data) {
-        self.zone.run(() => self.signup());
+        Paddle.Order.details(data.checkout.id, function(orderData) {
+          // Order data, downloads, receipts etc... available within 'data' variable.
+          self.zone.run(() => self.signup(orderData.order.subscription_id));
+        });
       }
     });
   }

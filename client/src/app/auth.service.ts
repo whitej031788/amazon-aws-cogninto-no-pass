@@ -36,12 +36,13 @@ export class AuthService {
     return this.cognitoUser.challengeParam;
   }
 
-  public async signUp(email: string, fullName: string) {
+  public async signUp(email: string, fullName: string, subId: string) {
     const params = {
       username: email,
       password: this.getRandomString(30),
       attributes: {
-        name: fullName
+        name: fullName,
+        subscription_id: subId
       }
     };
     await Auth.signUp(params);
